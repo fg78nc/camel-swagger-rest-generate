@@ -1,0 +1,1515 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "4.0.0",
+    "title": "Companies Data API",
+    "description": "\"Companies API\" provides detailed reports on companies in the selected regions.",
+    "contact": {
+      "email": "fg78nc@gmail.com",
+      "name": "Integration HUB development team",
+      "url": "http://www.example.com"
+    }
+  },
+  "host": "virtserver.swaggerhub.com",
+  "basePath": "/fg7/CCIH_API/1.0.0",
+  "schemes": [
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/authenticate": {
+      "post": {
+        "description": "Authenticates user against credentials and returns authorization token for further interactions with the API",
+        "summary": "Authenticates user against credentials and returns authorization token for further interactions with the API",
+        "tags": [
+          "authenticate"
+        ],
+        "operationId": "AuthenticatePost",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "description": "Must be set to \\'application/json\\' for proper content negotiation"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "description": "Credentials (username and password) used to authenticate user",
+            "schema": {
+              "$ref": "#/definitions/AuthenticationRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful authentication, access token will be provided in the response message",
+            "schema": {
+              "$ref": "#/definitions/AuthenticationSuccessResponse"
+            },
+            "headers": {}
+          },
+          "400": {
+            "description": "Request could not be understood by the server.",
+            "schema": {
+              "$ref": "#/definitions/ClientRequestErrorResponse"
+            },
+            "examples": {
+              "application/json": {
+                "correlationId": "ddd65e40-0deb-11e9-9ae2-02b5324a36fc",
+                "message": "Bad client request",
+                "details": "Request could not be understood by the server due to malformed syntax. Please check amd modify the structure of your JSON and repeat your request."
+              }
+            }
+          },
+          "401": {
+            "description": "Unsuccessful authentication, error message will be provided in the response",
+            "schema": {
+              "$ref": "#/definitions/AuthenticationErrorResponse"
+            }
+          },
+          "403": {
+            "description": "Request is not authorized, error message will be provided in the response",
+            "schema": {}
+          },
+          "404": {
+            "description": "No response mapped to the request uri",
+            "schema": {}
+          },
+          "429": {
+            "description": "Request rate limit exceeded",
+            "schema": {}
+          },
+          "default": {
+            "description": "Server error",
+            "schema": {}
+          }
+        }
+      }
+    },
+    "/companies/search": {
+      "get": {
+        "description": "Given search parameters, provides matched list of companies.",
+        "summary": "Given search parameters, provides matched list of companies.",
+        "tags": [
+          "companies"
+        ],
+        "operationId": "CompaniesSearchGet",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "Authentication",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "description": "Basic authentication with base64 encoded string - authentication token provided by Authorization endpoint."
+          },
+          {
+            "name": "countries",
+            "in": "query",
+            "required": true,
+            "type": "string",
+            "description": "Comma separated list of country codes"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Company Id"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Company name"
+          },
+          {
+            "name": "safeNo",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "API proprietary no"
+          },
+          {
+            "name": "regNo",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Company registration number"
+          },
+          {
+            "name": "vatNo",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "VAT number"
+          },
+          {
+            "name": "street",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Street address"
+          },
+          {
+            "name": "city",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "City"
+          },
+          {
+            "name": "postCode",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Post code"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Company status"
+          },
+          {
+            "name": "phone",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Company phone number"
+          },
+          {
+            "name": "<<queryParamSearch>>",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Arbitrary parameter than can be passed in. Can be county dependent"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "default": 1,
+            "type": "integer",
+            "format": "int32",
+            "exclusiveMaximum": false,
+            "exclusiveMinimum": false,
+            "description": "Starting position in the list of items"
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "default": 10,
+            "type": "integer",
+            "format": "int32",
+            "exclusiveMaximum": false,
+            "exclusiveMinimum": false,
+            "description": "Maximum number of items to be returned"
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "required": false,
+            "default": "name",
+            "type": "string",
+            "description": "Comma separated list of parameters, defining sorting criteria"
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "required": false,
+            "default": "asc",
+            "type": "string",
+            "description": "Sorting order of retrieved results"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success - list of companies matching search parameters will be provided",
+            "schema": {
+              "$ref": "#/definitions/CompaniesSearchResponse"
+            },
+            "examples": {
+              "application/json": {
+                "value": {
+                  "id": "GB001-1-4257085",
+                  "country": "GB",
+                  "safeNo": "UK11538192",
+                  "name": "DHL",
+                  "address": {
+                    "line": "LINK 20 BUSINESS PARK, LARKFIELD, AYLESFORD, KENT, ME20 6SP",
+                    "street": "LARKFIELD",
+                    "city": "AYLESFORD",
+                    "postCode": "ME20 6SP"
+                  },
+                  "status": "Active",
+                  "type": "NonLtd",
+                  "dateOfLatestChange": "2011-09-27T23:00:00Z"
+                }
+              }
+            },
+            "headers": {}
+          },
+          "401": {
+            "description": "Unsuccessful authentication, error message will be provided in the response",
+            "schema": {
+              "$ref": "#/definitions/AuthenticationErrorResponse"
+            }
+          },
+          "403": {
+            "description": "Request is not authorized, error message will be provided in the response",
+            "schema": {}
+          },
+          "404": {
+            "description": "No response mapped to the request uri",
+            "schema": {}
+          },
+          "429": {
+            "description": "Request rate limit exceeded",
+            "schema": {}
+          },
+          "default": {
+            "description": "Server error",
+            "schema": {}
+          }
+        }
+      }
+    },
+    "/companies/{id}": {
+      "get": {
+        "description": "Given companyId provides report on the company",
+        "summary": "Provides company report",
+        "tags": [
+          "companies"
+        ],
+        "operationId": "CompaniesByIdGet",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "Authentication",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "description": "Basic authentication with base64 encoded string - authentication token provided by Authorization endpoint."
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The identifier of the company the report is requested on"
+          },
+          {
+            "name": "language",
+            "in": "query",
+            "required": false,
+            "default": "en",
+            "type": "string",
+            "pattern": "^[a-zA-Z]{2}$",
+            "description": "The language of the requested report"
+          },
+          {
+            "name": "template",
+            "in": "query",
+            "required": false,
+            "default": "full",
+            "type": "string",
+            "description": "Report template"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Provides report on the company",
+            "schema": {
+              "$ref": "#/definitions/CompanyReportResponse"
+            },
+            "headers": {}
+          },
+          "401": {
+            "description": "Unsuccessful authentication, error message will be provided in the response",
+            "schema": {
+              "$ref": "#/definitions/AuthenticationErrorResponse"
+            }
+          },
+          "403": {
+            "description": "Request is not authorized, error message will be provided in the response",
+            "schema": {}
+          },
+          "404": {
+            "description": "No response mapped to the request uri",
+            "schema": {}
+          },
+          "429": {
+            "description": "Request rate limit exceeded",
+            "schema": {}
+          },
+          "default": {
+            "description": "Server error",
+            "schema": {}
+          }
+        }
+      }
+    },
+    "/companies/search/parameters": {
+      "get": {
+        "description": "Given list of countries, provides information on valid search parameters to narrow search",
+        "summary": "Provides list of search parameters",
+        "tags": [
+          "companies"
+        ],
+        "operationId": "CompaniesSearchParametersGet",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "Authentication",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "description": "Basic authentication with base64 encoded string - authentication token provided by Authorization endpoint."
+          },
+          {
+            "name": "countries",
+            "in": "query",
+            "required": true,
+            "type": "string",
+            "description": "Comma separated list of country codes"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success - list of valid search parameters applicable to the selected countries will be provided",
+            "schema": {
+              "$ref": "#/definitions/SearchParametersResponse"
+            },
+            "headers": {}
+          },
+          "400": {
+            "description": "Request could not be understood by the server.",
+            "schema": {
+              "$ref": "#/definitions/ClientRequestErrorResponse"
+            },
+            "examples": {
+              "application/json": {
+                "correlationId": "ddd65e40-0deb-11e9-9ae2-02b5324a36fc",
+                "message": "Bad client request",
+                "details": "Error 436 - specified search parameters combination is not supported. Please modify request and retry."
+              }
+            }
+          },
+          "401": {
+            "description": "Unsuccessful authentication, error message will be provided in the response",
+            "schema": {
+              "$ref": "#/definitions/AuthenticationErrorResponse"
+            }
+          },
+          "403": {
+            "description": "Request is not authorized, error message will be provided in the response",
+            "schema": {}
+          },
+          "404": {
+            "description": "No response mapped to the request uri",
+            "schema": {}
+          },
+          "429": {
+            "description": "Request rate limit exceeded",
+            "schema": {}
+          },
+          "default": {
+            "description": "Server error",
+            "schema": {}
+          }
+        }
+      }
+    },
+    "/companies/countries": {
+      "get": {
+        "description": "Provides list of countries available for company reports",
+        "summary": "Provides list of countries",
+        "tags": [
+          "companies"
+        ],
+        "operationId": "CompaniesCountriesGet",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "Authentication",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "description": "Basic authentication with base64 encoded string - authentication token provided by Authorization endpoint."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success - list of available countries will be provided",
+            "schema": {
+              "$ref": "#/definitions/CountriesResponse"
+            },
+            "headers": {}
+          },
+          "400": {
+            "description": "Request could not be understood by the server.",
+            "schema": {
+              "$ref": "#/definitions/ClientRequestErrorResponse"
+            },
+            "examples": {
+              "application/json": {
+                "correlationId": "ddd65e40-0deb-11e9-9ae2-02b5324a36fc",
+                "message": "Bad client request",
+                "details": "Error 437 - not valid required query parameter `id`. Please modify request and retry."
+              }
+            }
+          },
+          "401": {
+            "description": "Unsuccessful authentication, error message will be provided in the response",
+            "schema": {
+              "$ref": "#/definitions/AuthenticationErrorResponse"
+            }
+          },
+          "403": {
+            "description": "Request is not authorized, error message will be provided in the response",
+            "schema": {}
+          },
+          "404": {
+            "description": "No response mapped to the request uri",
+            "schema": {}
+          },
+          "429": {
+            "description": "Request rate limit exceeded",
+            "schema": {}
+          },
+          "default": {
+            "description": "Server error",
+            "schema": {}
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "AuthenticationRequest": {
+      "title": "AuthenticationRequest",
+      "description": "JSON to be provided in the request body for API authentication",
+      "example": {
+        "username": "user123",
+        "password": "er$yg^#eyd23tg652da"
+      },
+      "type": "object",
+      "properties": {
+        "username": {
+          "example": "user123",
+          "type": "string"
+        },
+        "password": {
+          "example": "er$yg^#eyd23tg652da",
+          "type": "string"
+        }
+      },
+      "required": [
+        "username",
+        "password"
+      ]
+    },
+    "AuthenticationSuccessResponse": {
+      "title": "AuthenticationSuccessResponse",
+      "description": "Authorization token to be used for subsequent API interactions. Expires in 2 hours.",
+      "example": {
+        "auth_token": "eyJraWQiOiJNSytSKzRhYUk4YjBxVkhBMkZLZFN4Ykdpb3RXbTNXOGhZWE45dXF3K3YwPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiI1ZjE3M2M2Zi0xNzkyLTQ1N2QtOWFlMC0zNzMwZjhjMzZiYTIiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiaXNzIjoiaHR0cHM6XC9cL2NvZ25pdG8taWRwLmV1LXdlc3QtMS5hbWF6b25hd3MuY29tXC9ldS13ZXN0LTFfTXY4TUFxaDFjIiwiY29nbml0bzp1c2VybmFtZSI6ImJhcnRsb21pZWoud2FzaWtAZWxhdm9uLmNvbSIsImN1c3RvbTpjc1VzZXJJZCI6IjEwMDA0ODEzODQiLCJhdWQiOiI0cDg4ZGRnN3VnNnIxam1la2Rkdmluam9xMCIsImN1c3RvbTpjc1VzZXJDb3VudHJ5Q29kZSI6IlVLIiwiZXZlbnRfaWQiOiJkMTliYTU3ZC0wZDY0LTExZTktOTQwOS0yOWQ0N2U0ODFlYTkiLCJ0b2tlbl91c2UiOiJpZCIsImF1dGhfdGltZSI6MTU0NjMwNjIyNywiZXhwIjoxNTQ2MzA5ODI3LCJpYXQiOjE1NDYzMDYyMjcsImVtYWlsIjoiYmFydGxvbWllai53YXNpa0BlbGF2b24uY29tIn0.KS5SQZcc3BdyIAmAfhrLDDYO7ebNvROEW-Su0nRX2mK12H4529vawoigVkn3Xb653TRFx6fxJe_BiA3yPb0qP0_ZYhNQ_rQAL0zF93E82vBn-nHSjotWcknxqgzuMw-hMsCaKGyUaYxWwtiVSDwD51sNgR-hskXiELYo1HN0kDqCiQMfowNH-5cqJqqjqiCy46KsOtK3FlK6c_zjh96yhIS4DhZGccpqT5Dssuols03iEEI_h8KvemSe7HEtfnwdWovwEUlsBkXtc7BRb6LIH2ZrekTcJDZLMJBB6Tcf3pVN9we22DLQYKuNqDc3TK962D17-bKlVCnSB2J_--VPrw"
+      },
+      "type": "object",
+      "properties": {
+        "auth_token": {
+          "example": "eyJraWQiOiJNSytSKzRhYUk4YjBxVkhBMkZLZFN4Ykdpb3RXbTNXOGhZWE45dXF3K3YwPSIsImFsZyI6IlJTMjU2In0",
+          "type": "string"
+        }
+      },
+      "required": [
+        "auth_token"
+      ]
+    },
+    "AuthenticationErrorResponse": {
+      "title": "AuthenticationErrorResponse",
+      "description": "Error message for failed authentication",
+      "type": "object",
+      "properties": {
+        "message": {
+          "example": "Access denied - please verify whether supplied credentials are correct. Kindly note that credentials are case sensitive. If problem persists, please contact your API development team.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "message"
+      ]
+    },
+    "ClientRequestErrorResponse": {
+      "title": "ClientRequestErrorResponse",
+      "description": "Response message for bad request - malformed client request syntax",
+      "example": {
+        "correlationId": "ddd65e40-0deb-11e9-9ae2-02b5324a36fc",
+        "message": "Bad client request",
+        "details": "Request could not be understood by the server due to malformed syntax. Please check amd modify the structure of your JSON and repeat your request."
+      },
+      "type": "object",
+      "properties": {
+        "correlationId": {
+          "example": "458ae670-0dea-11e9-9ae2-02b5324a36fc",
+          "type": "string"
+        },
+        "message": {
+          "example": "Bad client request",
+          "type": "string"
+        },
+        "details": {
+          "example": "Request could not be understood by the server due to malformed syntax. Please check amd modify the structure of your JSON and repeat your request.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "correlationId",
+        "message",
+        "details"
+      ]
+    },
+    "CountriesResponse": {
+      "title": "CountriesResponse",
+      "description": "List of countries where company reports are available",
+      "type": "object",
+      "properties": {
+        "countryName": {
+          "example": "Great Britain",
+          "type": "string"
+        },
+        "countryISO": {
+          "example": "GB",
+          "type": "string"
+        }
+      }
+    },
+    "SearchParametersSet": {
+      "title": "SearchParametersSet",
+      "description": "Search parameters available for selected countries to refine search. When multiple countries are supplied will return search parameters that are common between those countries.",
+      "type": "object",
+      "properties": {
+        "searchParameters": {
+          "$ref": "#/definitions/SearchParameters"
+        }
+      },
+      "required": [
+        "searchParameters"
+      ]
+    },
+    "SearchParameters": {
+      "title": "SearchParameters",
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/SearchParameterType"
+        },
+        "safeNo": {
+          "$ref": "#/definitions/SearchParameterType"
+        },
+        "regNo": {
+          "$ref": "#/definitions/SearchParameterType"
+        },
+        "vatNo": {
+          "$ref": "#/definitions/SearchParameterType"
+        },
+        "name": {
+          "$ref": "#/definitions/SearchParameterType"
+        },
+        "exact": {
+          "$ref": "#/definitions/SearchParameterType"
+        },
+        "street": {
+          "$ref": "#/definitions/SearchParameterType"
+        },
+        "houseNo": {
+          "$ref": "#/definitions/SearchParameterType"
+        },
+        "city": {
+          "$ref": "#/definitions/SearchParameterType"
+        },
+        "postCode": {
+          "$ref": "#/definitions/SearchParameterType"
+        },
+        "province": {
+          "$ref": "#/definitions/SearchParameterType"
+        },
+        "phone": {
+          "$ref": "#/definitions/SearchParameterType"
+        },
+        "officeType": {
+          "$ref": "#/definitions/SearchParameterType"
+        },
+        "status": {
+          "$ref": "#/definitions/SearchParameterType"
+        },
+        "type": {
+          "$ref": "#/definitions/SearchParameterType"
+        }
+      }
+    },
+    "SearchParameterType": {
+      "title": "SearchParameterType",
+      "description": "Search Parameter used to narrow down result in company search",
+      "type": "object",
+      "properties": {
+        "required": {
+          "type": "boolean"
+        },
+        "allowedValues": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "minLength": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "maxLength": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "regex": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "required"
+      ]
+    },
+    "SearchParametersResponse": {
+      "title": "SearchParametersResponse",
+      "description": "Response message containing valid search parameters",
+      "type": "object",
+      "properties": {
+        "countries": {
+          "description": "List of countries",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CountryCodes"
+          }
+        },
+        "searchParametersSet": {
+          "description": "Set of seach parameters applicable to the selected countries",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/SearchParametersSet"
+          }
+        }
+      }
+    },
+    "CompaniesSearchResponse": {
+      "title": "CompaniesSearchResponse",
+      "description": "Paginated list companies matching provided search parameters",
+      "example": {
+        "value": {
+          "id": "GB001-1-4257085",
+          "country": "GB",
+          "safeNo": "UK11538192",
+          "name": "DHL",
+          "address": {
+            "line": "LINK 20 BUSINESS PARK, LARKFIELD, AYLESFORD, KENT, ME20 6SP",
+            "street": "LARKFIELD",
+            "city": "AYLESFORD",
+            "postCode": "ME20 6SP"
+          },
+          "status": "Active",
+          "type": "NonLtd",
+          "dateOfLatestChange": "2011-09-27T23:00:00Z"
+        }
+      },
+      "type": "object",
+      "properties": {
+        "pagination": {
+          "$ref": "#/definitions/Paging"
+        },
+        "companies": {
+          "description": "List of companies matching provided search parameters",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CompanySearchResult"
+          }
+        }
+      }
+    },
+    "Paging": {
+      "title": "Paging",
+      "description": "Information on API pagination",
+      "type": "object",
+      "properties": {
+        "pageNumber": {
+          "example": 1,
+          "type": "integer",
+          "format": "int32"
+        },
+        "itemsPerPage": {
+          "example": 10,
+          "type": "integer",
+          "format": "int32"
+        },
+        "TotalSize": {
+          "example": 3,
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "CompanySearchResult": {
+      "title": "CompanySearchResult",
+      "description": "Information on company matching provided search results",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "Company identification number, used to order company report",
+          "example": "GB001-1-425708",
+          "type": "string"
+        },
+        "country": {
+          "description": "Country where the company is registered",
+          "example": "GB",
+          "type": "string"
+        },
+        "safeNo": {
+          "description": "API internal unique identification number",
+          "example": "UK21538192",
+          "type": "string"
+        },
+        "name": {
+          "description": "Registered company name/trading name of the business.",
+          "example": "DHL",
+          "type": "string"
+        },
+        "address": {
+          "$ref": "#/definitions/Address"
+        },
+        "status": {
+          "$ref": "#/definitions/Status"
+        },
+        "type": {
+          "$ref": "#/definitions/Type"
+        },
+        "dateOfLatestChange": {
+          "description": "Date of last change on company profile",
+          "example": "9/27/2011 11:00:00 PM",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "country",
+        "safeNo",
+        "name",
+        "address",
+        "status",
+        "type",
+        "dateOfLatestChange"
+      ]
+    },
+    "Address": {
+      "title": "Address",
+      "description": "Address of the company",
+      "type": "object",
+      "properties": {
+        "line": {
+          "example": "LINK 20 BUSINESS PARK, LARKFIELD, AYLESFORD, KENT, ME20 6SP",
+          "type": "string"
+        },
+        "street": {
+          "example": "LARKFIELD",
+          "type": "string"
+        },
+        "city": {
+          "example": "AYLESFORD",
+          "type": "string"
+        },
+        "postCode": {
+          "example": "ME20 6SP",
+          "type": "string"
+        }
+      }
+    },
+    "CompanyReportResponse": {
+      "title": "CompanyReportResponse",
+      "type": "object",
+      "properties": {
+        "orderId": {
+          "example": "N/A",
+          "type": "string"
+        },
+        "companyId": {
+          "example": "GB-1-4257085",
+          "type": "string"
+        },
+        "dateOfOrder": {
+          "example": "1/3/2019 2:57:44 PM",
+          "type": "string"
+        },
+        "language": {
+          "example": "en",
+          "type": "string"
+        },
+        "chargeRef": {
+          "type": "string"
+        },
+        "report": {
+          "$ref": "#/definitions/CompanyReport"
+        }
+      }
+    },
+    "CompanyReport": {
+      "title": "CompanyReport",
+      "type": "object",
+      "properties": {
+        "companyId": {
+          "description": "Unique company identifier",
+          "example": "dhl",
+          "type": "string"
+        },
+        "language": {
+          "description": "Language of the report",
+          "example": "en",
+          "type": "string"
+        },
+        "companySummary": {
+          "$ref": "#/definitions/CompanySummary"
+        },
+        "companyIdentification": {
+          "$ref": "#/definitions/CompanyIdentification"
+        },
+        "creditScore": {
+          "$ref": "#/definitions/CreditScore"
+        },
+        "contactInformation": {
+          "$ref": "#/definitions/ContactInformation"
+        },
+        "directors": {
+          "$ref": "#/definitions/Directors"
+        },
+        "otherInformation": {
+          "$ref": "#/definitions/OtherInformation"
+        },
+        "negativeInformation": {
+          "$ref": "#/definitions/NegativeInformation"
+        },
+        "additionalInformation": {
+          "$ref": "#/definitions/AdditionalInformation"
+        }
+      }
+    },
+    "Activities": {
+      "title": "Activities",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "Industry code used in that country e.g. SIC / NACE",
+          "example": "64120",
+          "type": "string"
+        },
+        "description": {
+          "description": "Description of companies main activity",
+          "example": "Courier activities other than national post activities",
+          "type": "string"
+        }
+      }
+    },
+    "ActivityClassifications": {
+      "title": "ActivityClassifications",
+      "type": "object",
+      "properties": {
+        "classification": {
+          "example": "SIC03",
+          "type": "string"
+        },
+        "activities": {
+          "$ref": "#/definitions/Activities"
+        }
+      }
+    },
+    "AdditionalInformation": {
+      "title": "AdditionalInformation",
+      "type": "object",
+      "properties": {
+        "additionalInformation": {
+          "$ref": "#/definitions/AdditionalInformation1"
+        }
+      }
+    },
+    "AdditionalInformation1": {
+      "title": "AdditionalInformation1",
+      "type": "object",
+      "properties": {
+        "premisesType": {
+          "example": "Transport",
+          "type": "string"
+        }
+      }
+    },
+    "BasicInformation": {
+      "title": "BasicInformation",
+      "type": "object",
+      "properties": {
+        "businessName": {
+          "description": "The trading name of business.",
+          "example": "D H L",
+          "type": "string"
+        },
+        "registeredCompanyName": {
+          "description": "Registered company name.",
+          "example": "D H L",
+          "type": "string"
+        },
+        "country": {
+          "description": "Country where the company is registered",
+          "example": "GB",
+          "type": "string"
+        },
+        "companyStatus": {
+          "$ref": "#/definitions/CompanyStatus1"
+        },
+        "contactAddress": {
+          "$ref": "#/definitions/ContactAddress"
+        }
+      }
+    },
+    "CommonValue": {
+      "title": "CommonValue",
+      "description": "Standardised credit rating – will be A,B,C,D or E.",
+      "example": "A",
+      "type": "string"
+    },
+    "CommonValue1": {
+      "title": "CommonValue1",
+      "description": "The previous standardised credit rating – will be A,B,C,D or E.",
+      "example": "A",
+      "type": "string"
+    },
+    "CompanyIdentification": {
+      "title": "CompanyIdentification",
+      "type": "object",
+      "properties": {
+        "basicInformation": {
+          "$ref": "#/definitions/BasicInformation"
+        },
+        "activityClassifications": {
+          "$ref": "#/definitions/ActivityClassifications"
+        }
+      }
+    },
+    "CompanyStatus": {
+      "title": "CompanyStatus",
+      "description": "A more in-depth status value which reflects against its value in the @Code attribute.",
+      "example": "Active",
+      "type": "string"
+    },
+    "CompanyStatus1": {
+      "title": "CompanyStatus1",
+      "type": "object",
+      "properties": {
+        "status": {
+          "$ref": "#/definitions/Status"
+        }
+      }
+    },
+    "CompanySummary": {
+      "title": "CompanySummary",
+      "description": "Summary information on the company",
+      "type": "object",
+      "properties": {
+        "businessName": {
+          "description": "Registered company name/trading name of the business.",
+          "example": "D H L",
+          "type": "string"
+        },
+        "country": {
+          "description": "Country where the company is registered",
+          "type": "object"
+        },
+        "companyNumber": {
+          "description": "Official registration number",
+          "example": "UK11538192",
+          "type": "string"
+        },
+        "mainActivity": {
+          "$ref": "#/definitions/MainActivity"
+        },
+        "companyStatus": {
+          "$ref": "#/definitions/CompanyStatus"
+        },
+        "creditRating": {
+          "$ref": "#/definitions/CreditRating"
+        }
+      }
+    },
+    "ContactAddress": {
+      "title": "ContactAddress",
+      "type": "object",
+      "properties": {
+        "addressline": {
+          "description": "(Optionally populated) Registered address of the company. Whole string address if API is unable to accurately assign address values to specific address fields.",
+          "example": "LINK 20 BUSINESS PARK, AYLESFORD, KENT, ME20 6SP",
+          "type": "string"
+        },
+        "houseNumber": {
+          "description": "House number portion of the address line",
+          "example": "29",
+          "type": "string"
+        },
+        "street": {
+          "description": "Street portion of the address line. Can also, optionally contain, the house number alongside the street",
+          "example": "LINK 20 BUSINESS PARK",
+          "type": "string"
+        },
+        "city": {
+          "description": "City portion of the address line",
+          "example": "AYLESFORD",
+          "type": "string"
+        },
+        "postalcode": {
+          "description": "Postal code portion of the address line",
+          "example": "ME20 6SP",
+          "type": "string"
+        },
+        "province": {
+          "description": "Province portion of the address line",
+          "example": "KENT",
+          "type": "string"
+        },
+        "telephone": {
+          "description": "Registered telephone number",
+          "example": "01622 712700",
+          "type": "string"
+        }
+      }
+    },
+    "ContactInformation": {
+      "title": "ContactInformation",
+      "type": "object",
+      "properties": {
+        "mainAddress": {
+          "$ref": "#/definitions/MainAddress"
+        },
+        "websites": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "CountryCodes": {
+      "title": "CountryCodes",
+      "example": "BE",
+      "type": "string"
+    },
+    "CreditLimit": {
+      "title": "CreditLimit",
+      "description": "Amount of credit advisable at any one time",
+      "type": "object",
+      "properties": {
+        "currency": {
+          "description": "TBD",
+          "example": "GPB",
+          "type": "string"
+        },
+        "value": {
+          "description": "TBD",
+          "example": 5000,
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "CreditLimit1": {
+      "title": "CreditLimit1",
+      "description": "Amount of credit advisable at any one time.",
+      "type": "object",
+      "properties": {
+        "currency": {
+          "example": "GBP",
+          "type": "string"
+        },
+        "value": {
+          "example": 5000,
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "CreditLimit2": {
+      "title": "CreditLimit2",
+      "type": "object",
+      "properties": {
+        "currency": {
+          "example": "GBP",
+          "type": "string"
+        },
+        "value": {
+          "description": "Credit score used by the supplier in that particular country - guide attached",
+          "example": 500,
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "CreditRating": {
+      "title": "CreditRating",
+      "type": "object",
+      "properties": {
+        "commonValue": {
+          "$ref": "#/definitions/CommonValue"
+        },
+        "commonDescription": {
+          "description": "A text description of the common credit rating",
+          "example": "Moderate Risk",
+          "type": "string"
+        },
+        "creditLimit": {
+          "$ref": "#/definitions/CreditLimit"
+        },
+        "providerValue": {
+          "$ref": "#/definitions/ProviderValue"
+        },
+        "providerDescription": {
+          "description": "Description of the credit score",
+          "example": "Moderate Risk",
+          "type": "string"
+        }
+      }
+    },
+    "CreditScore": {
+      "title": "CreditScore",
+      "type": "object",
+      "properties": {
+        "currentCreditRating": {
+          "$ref": "#/definitions/CurrentCreditRating"
+        },
+        "previousCreditRating": {
+          "$ref": "#/definitions/PreviousCreditRating"
+        }
+      }
+    },
+    "CurrentCreditRating": {
+      "title": "CurrentCreditRating",
+      "type": "object",
+      "properties": {
+        "commonValue": {
+          "description": "Standardised credit rating – will be A,B,C,D or E.",
+          "example": "A",
+          "type": "string"
+        },
+        "creditLimit": {
+          "$ref": "#/definitions/CreditLimit1"
+        },
+        "providerValue": {
+          "$ref": "#/definitions/ProviderValue1"
+        },
+        "providerDescription": {
+          "description": "Description of the credit score",
+          "example": "Moderate Risk",
+          "type": "string"
+        }
+      }
+    },
+    "CurrentDirector": {
+      "title": "CurrentDirector",
+      "type": "object",
+      "properties": {
+        "gender": {
+          "$ref": "#/definitions/Gender"
+        },
+        "positions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Position"
+          }
+        }
+      }
+    },
+    "Directors": {
+      "title": "Directors",
+      "type": "object",
+      "properties": {
+        "currentDirectors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CurrentDirector"
+          }
+        },
+        "name": {
+          "description": "Full name of director",
+          "example": "MR ROY OSBORNE",
+          "type": "string"
+        }
+      }
+    },
+    "EmployeeInformation": {
+      "title": "EmployeeInformation",
+      "type": "object",
+      "properties": {
+        "numberOfEmployees": {
+          "description": "Number of staff that the company employ directly",
+          "example": 72,
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "Gender": {
+      "title": "Gender",
+      "description": "An ISO standard integer enumeration Male (1), female (2) or Unknown (0).",
+      "example": 1,
+      "type": "integer",
+      "format": "int32"
+    },
+    "MainActivity": {
+      "title": "MainActivity",
+      "description": "Information of the main activity of the company",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "Main activity code used in that country e.g. SIC / NACE",
+          "example": "64120",
+          "type": "string"
+        },
+        "description": {
+          "description": "Description of main activity",
+          "example": "Courier activities other than national post activities",
+          "type": "string"
+        },
+        "classification": {
+          "description": "Classification of activity",
+          "example": "SIC03",
+          "type": "string"
+        }
+      }
+    },
+    "MainAddress": {
+      "title": "MainAddress",
+      "type": "object",
+      "properties": {
+        "addressLine": {
+          "description": "(Optionally populated) Registered address of the company. Whole string address if API is unable to accurately assign address values to specific address fields.",
+          "example": "LINK 20 BUSINESS PARK, AYLESFORD, KENT, ME20 6SP",
+          "type": "string"
+        },
+        "houseNumber": {
+          "description": "House number portion of the address line",
+          "example": "20",
+          "type": "string"
+        },
+        "street": {
+          "description": "Street portion of the address line. Can also, optionally contain, the house number alongside the street",
+          "example": "LINK 20 BUSINESS PARK",
+          "type": "string"
+        },
+        "city": {
+          "description": "City portion of the address line",
+          "example": "AYLESFORD",
+          "type": "string"
+        },
+        "postalCode": {
+          "description": "Postal code portion of the address line",
+          "example": "ME20 6SP",
+          "type": "string"
+        },
+        "province": {
+          "description": "Province portion of the address line",
+          "example": "KENT",
+          "type": "string"
+        },
+        "telephone": {
+          "description": "Telephone number of the main address",
+          "example": "01622 712700",
+          "type": "string"
+        }
+      }
+    },
+    "NegativeInformation": {
+      "title": "NegativeInformation",
+      "type": "object",
+      "properties": {
+        "unknown": {
+          "type": "string"
+        }
+      }
+    },
+    "OtherInformation": {
+      "title": "OtherInformation",
+      "type": "object",
+      "properties": {
+        "employeeInformation": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/EmployeeInformation"
+          }
+        }
+      }
+    },
+    "Position": {
+      "title": "Position",
+      "type": "object",
+      "properties": {
+        "positionName": {
+          "description": "The directors role/position in a company",
+          "example": "MANAGER",
+          "type": "string"
+        }
+      }
+    },
+    "PreviousCreditRating": {
+      "title": "PreviousCreditRating",
+      "description": "Previous limit before it was last changed",
+      "type": "object",
+      "properties": {
+        "commonValue": {
+          "$ref": "#/definitions/CommonValue1"
+        },
+        "commonDescription": {
+          "description": "Description of the previous rating",
+          "example": "Moderate Risk",
+          "type": "string"
+        },
+        "creditLimit": {
+          "$ref": "#/definitions/CreditLimit2"
+        },
+        "providerValue": {
+          "$ref": "#/definitions/ProviderValue2"
+        },
+        "providerDescription": {
+          "example": "Moderate Risk",
+          "type": "string"
+        }
+      }
+    },
+    "ProviderValue": {
+      "title": "ProviderValue",
+      "type": "object",
+      "properties": {
+        "maxValue": {
+          "description": "The maximum value of the score that is provided for the Country.",
+          "example": 100,
+          "type": "integer",
+          "format": "int32"
+        },
+        "minValue": {
+          "description": "The minimum value of the score that is provided for the Country.",
+          "example": 39,
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "ProviderValue1": {
+      "title": "ProviderValue1",
+      "type": "object",
+      "properties": {
+        "maxValue": {
+          "description": "The maximum value of the score that is provided for the Country.",
+          "example": 100,
+          "type": "integer",
+          "format": "int32"
+        },
+        "minValue": {
+          "description": "The minimum value of the score that is provided for the Country.",
+          "example": 1,
+          "type": "integer",
+          "format": "int32"
+        },
+        "value": {
+          "example": 39,
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "ProviderValue2": {
+      "title": "ProviderValue2",
+      "type": "object",
+      "properties": {
+        "maxValue": {
+          "description": "The maximum value of the score that is provided for the Country.",
+          "example": 100,
+          "type": "integer",
+          "format": "int32"
+        },
+        "minValue": {
+          "description": "The minimum value of the score that is provided for the Country.",
+          "example": 1,
+          "type": "integer",
+          "format": "int32"
+        },
+        "value": {
+          "description": "Previous rating before it was last changed",
+          "example": 39,
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "sortBy": {
+      "title": "sortBy",
+      "example": "id",
+      "type": "string"
+    },
+    "sortOrder": {
+      "title": "sortOrder",
+      "example": "asc",
+      "type": "string"
+    },
+    "Status": {
+      "title": "Status",
+      "description": "A look up stating the high level status. Values include Active, NonActive, Pending and Other.",
+      "example": "Active",
+      "type": "string"
+    },
+    "template": {
+      "title": "template",
+      "externalDocs": {
+        "url": "http://www.example.com",
+        "description": "More on Report Templates"
+      },
+      "example": "full",
+      "type": "string"
+    },
+    "Type": {
+      "title": "Type",
+      "description": "Type of the company. Values include Ltd and NonLtd",
+      "example": "Ltd",
+      "type": "string"
+    }
+  },
+  "tags": [
+    {
+      "name": "authenticate",
+      "description": "Authorization endpoint"
+    },
+    {
+      "name": "companies",
+      "description": "Data provider endpoint"
+    }
+  ]
+}
